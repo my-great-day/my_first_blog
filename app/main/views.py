@@ -1,7 +1,7 @@
 from flask import Flask, jsonify
-from app import blog
+from app import app
 
 
-@blog.route("/")
+@app.route("/")
 def index():
     return jsonify('Hello')
