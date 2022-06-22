@@ -53,7 +53,8 @@ def publish(id):
     if session.get('my_first_blog') != id:
         return redirect(url_for('register'))
     pub = Publish.query.all()
-    return render_template('publish.html', id_url=id, pub=pub, user=Users)
+    comments = Comment.query.all()
+    return render_template('publish.html', id_url=id, pub=pub, user=Users, comments=comments)
 
 
 @app.route('/create_publish/<id>', methods=['POST', 'GET'])
