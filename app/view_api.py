@@ -56,5 +56,6 @@ def login():
 @jwt_required()
 def protected():
     return jsonify(
-        'Hello'
+        user=current_user.username,
+        email=current_user.email
     )

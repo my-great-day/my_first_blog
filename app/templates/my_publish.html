@@ -1,0 +1,17 @@
+<div>
+  <ul>
+    <li><a href="{{ url_for('index') }}">Выход</a></li>
+    <li><a href="{{ url_for('create_publish', id=id_url) }}">Создать публикацию</a></li>
+      <li><a href="{{ url_for('publish', id=id_url) }}">Все публикации</a></li>
+  </ul>
+</div>
+<div>
+    {% for p in my_pub %}
+        <p>
+            Заголовок: {{ p.title_article }}<br>
+            Публикация:<br> {{ p.text_article }}<br>
+            Дата: {{ p.create_on }}<br>
+            <a href="{{ url_for('delete', user=id_url, id=p.id) }}">Удалить</a>
+        </p>
+    {% endfor %}
+</div>

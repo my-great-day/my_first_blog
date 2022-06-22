@@ -1,3 +1,21 @@
-<h1>
-    Hello world!
-</h1>
+<div>
+  <ul>
+    <li><a href="{{ url_for('index') }}">Выход</a></li>
+    <li><a href="{{ url_for('create_publish', id=id_url) }}">Создать публикацию</a></li>
+      <li><a href="{{ url_for('my_publish', id=id_url) }}">Мои публикации</a></li>
+  </ul>
+</div>
+<div>
+    {% for p in pub %}
+        <p>
+            Ползователь: {{  user.query.filter_by(id=p.users_id).one_or_none().username }}<br>
+            Заголовок: {{ p.title_article }}<br>
+            Публикация:<br> {{ p.text_article }}<br>
+            Дата: {{ p.create_on }}<br>
+            <form method="post" action="/create_comment/{{id_url}}/{{p.users_id}}/{{p.id}}">
+                <input type="text" name="comment" id="comment" placeholder="Comment here!">
+                <button type="submit">Sent</button>
+            </form>
+        </p>
+    {% endfor %}
+</div>
