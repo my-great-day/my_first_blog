@@ -1,4 +1,5 @@
 from datetime import datetime
+from time import strftime
 
 from app import db
 
@@ -20,7 +21,7 @@ class Publish(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     title_article = db.Column(db.VARCHAR(255), default='No name')
     text_article = db.Column(db.String(), default='Coming soon!')
-    create_on = db.Column(db.DateTime(), default=datetime.now().isoformat(timespec='seconds'))
+    create_on = db.Column(db.DateTime(), default=datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
     users_id = db.Column(db.Integer(), db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
     comment_id = db.relationship('Comment', backref='publish', passive_deletes=True)
     like_id = db.relationship('Like', backref='publish', passive_deletes=True)
@@ -31,7 +32,7 @@ class Comment(db.Model):
     __tablename__ = 'comment'
     id = db.Column(db.Integer(), primary_key=True)
     comment = db.Column(db.String(), nullable=False)
-    create_on = db.Column(db.DateTime(), default=datetime.now().isoformat(timespec='seconds'))
+    create_on = db.Column(db.DateTime(), default=datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
     users_id = db.Column(db.Integer(), db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
     publish_id = db.Column(db.Integer(), db.ForeignKey('publish.id', ondelete='CASCADE'), nullable=False)
 
@@ -40,7 +41,7 @@ class Like(db.Model):
     __tablename__ = 'like'
     id = db.Column(db.Integer(), primary_key=True)
     total = db.Column(db.Integer(), nullable=False)
-    create_on = db.Column(db.DateTime(), default=datetime.now().isoformat(timespec='seconds'))
+    create_on = db.Column(db.DateTime(), default=datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
     users_id = db.Column(db.Integer(), db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
     publish_id = db.Column(db.Integer(), db.ForeignKey('publish.id', ondelete='CASCADE'), nullable=False)
 
@@ -49,6 +50,6 @@ class Look(db.Model):
     __tablename__ = 'look'
     id = db.Column(db.Integer(), primary_key=True)
     total = db.Column(db.Integer(), nullable=False)
-    create_on = db.Column(db.DateTime(), default=datetime.now().isoformat(timespec='seconds'))
+    create_on = db.Column(db.DateTime(), default=datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
     users_id = db.Column(db.Integer(), db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
     publish_id = db.Column(db.Integer(), db.ForeignKey('publish.id', ondelete='CASCADE'), nullable=False)

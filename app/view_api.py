@@ -1,7 +1,7 @@
 from flask import request, jsonify
 
 from app import api, db, jwt
-from app.models import Users
+from app.models import Users, Like, Look, Publish, Comment
 
 from flask_jwt_extended import jwt_required, current_user, create_access_token
 
@@ -17,6 +17,7 @@ def user_lookup_callback(_jwt_header, jwt_data):
     return Users.query.filter_by(id=identity).one_or_none()
 
 
+# Регистрация
 @api.route("/registration", methods=["POST"])
 def registration():
     username = request.json.get("username", None)
@@ -38,6 +39,7 @@ def registration():
     )
 
 
+# Вход
 @api.route("/login", methods=["POST"])
 def login():
     email = request.json.get("email", None)
@@ -52,10 +54,45 @@ def login():
     return jsonify(access_token=access_token)
 
 
-@api.route("/get_res", methods=["GET"])
+# Все посты
+@api.route('/all_publish', methods=['Get'])
 @jwt_required()
-def protected():
+def all_publish():
+    pub = []
+    publish = Publish.query.all()
+    for p in publish:
+        user = Users.query.filter_by(id=p.users_id).first()
+        pub.append({'title_article': p.title_article, 'text_article': f'{p.text_article[:30]}...',
+                    'create_on': p.create_on.strftime("%Y-%m-%d %H:%M:%S"), 'username': user.username})
     return jsonify(
-        user=current_user.username,
-        email=current_user.email
+        publish=pub
+    )
+
+
+# Каждый пост по отделностю
+@api.route('/read_publish', methods=['Get'])
+@jwt_required()
+def read_publish():
+    comment = []
+    read_publish_id = request.json.get('publish_id', None)
+    publish = Publish.query.filter_by(id=read_publish_id).first()
+    user = Users.query.filter_by(id=publish.users_id).first()
+
+    comments = Comment.query.filter_by(publish_id=read_publish_id).all()
+    like = Like.query.filter_by(publish_id=read_publish_id).first()
+    look = Look.query.filter_by(publish_id=read_publish_id).first()
+
+    for c in comments:
+        user = Users.query.filter_by(id=c.users_id).first()
+        comment.append({'username': user.username, 'comment': c.comment,
+                        'date': c.create_on.strftime("%Y-%m-%d %H:%M:%S")})
+    return jsonify(
+        user=user.username,
+        id=publish.id,
+        title=publish.title_article,
+        post=publish.text_article,
+        date=publish.create_on.strftime("%Y-%m-%d %H:%M:%S"),
+        comment=comment,
+        like=like.total,
+        look=look.total
     )

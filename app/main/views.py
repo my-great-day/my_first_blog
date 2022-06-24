@@ -1,5 +1,4 @@
-from flask import request, render_template, redirect, url_for, jsonify, session
-from sqlalchemy.sql.functions import current_user
+from flask import request, render_template, redirect, url_for, session
 
 from app import app, db
 from app.models import Users, Publish, Comment, Like, Look
@@ -93,6 +92,7 @@ def read_publish(user, id):
     id_u = Users.query.filter_by(email=user).one_or_none()
     if request.method == 'POST':
         like_btn = request.form.get('like')
+        print(id_u.id)
         if like_btn and like:
             like.total += 1
             db.session.commit()
@@ -103,7 +103,7 @@ def read_publish(user, id):
             db.session.add(like)
             db.session.commit()
     look = Look.query.filter_by(publish_id=id).first()
-    if look is not None and look is not '':
+    if look is not None and look != '':
         look.total += 1
         db.session.commit()
     else:
