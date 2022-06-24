@@ -10,21 +10,12 @@
         <p>
             Ползователь: {{  user.query.filter_by(id=p.users_id).one_or_none().username }}<br>
             Заголовок: {{ p.title_article }}<br>
-            Публикация:<br> {{ p.text_article }}<br>
+            Публикация:<br> {{ p.text_article[:60] }}...<br>
             Дата: {{ p.create_on }}<br>
-            Comment: <br>
-            {% for c in comments %}
+            <a href="{{ url_for('read_publish',user=id_url, id=p.id) }}">Читать далее!</a>
 
-                {% if c.publish_id == p.id %}
-                    {{c.comment}}<br>
-                {% endif %}
+            <form method="post" action="/create_comment/{{id_url}}/{{p.id}}">
 
-                {% if c.publish_id == p.id %}
-                    {{c.comment}}<br>
-                {% endif %}
-            {% endfor %}
-
-            <form method="post" action="/create_comment/{{id_url}}/{{p.users_id}}/{{p.id}}">
                 <input type="text" name="comment" id="comment" placeholder="Comment here!">
                 <button type="submit">Sent</button>
             </form>

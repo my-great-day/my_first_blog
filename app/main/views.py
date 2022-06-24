@@ -2,7 +2,7 @@ from flask import request, render_template, redirect, url_for, jsonify, session
 from sqlalchemy.sql.functions import current_user
 
 from app import app, db
-from app.models import Users, Publish, Comment
+from app.models import Users, Publish, Comment, Like, Look
 
 
 @app.route('/')
@@ -28,6 +28,7 @@ def register():
         user = Users(username=username, email=email, password=password)
         db.session.add(user)
         db.session.commit()
+        return redirect(url_for('publish', id=email))
 
     msg = 'Проверте все поля!'
     return render_template('register.html', msg=msg)
@@ -86,6 +87,35 @@ def my_publish(id):
     return render_template('my_publish.html', id_url=id, my_pub=pub)
 
 
+@app.route('/read_publish/<user>/<id>', methods=['Post', 'Get'])
+def read_publish(user, id):
+    like = Like.query.filter_by(publish_id=id).first()
+    id_u = Users.query.filter_by(email=user).one_or_none()
+    if request.method == 'POST':
+        like_btn = request.form.get('like')
+        if like_btn and like:
+            like.total += 1
+            db.session.commit()
+            return redirect(url_for('read_publish', user=user, id=id))
+        else:
+            count = 1
+            like = Like(total=count, users_id=id_u.id, publish_id=id)
+            db.session.add(like)
+            db.session.commit()
+    look = Look.query.filter_by(publish_id=id).first()
+    if look is not None and look is not '':
+        look.total += 1
+        db.session.commit()
+    else:
+        count = 1
+        look = Look(total=count, users_id=id_u.id, publish_id=id)
+        db.session.add(look)
+        db.session.commit()
+    pub = Publish.query.filter_by(id=id).first()
+    comments = Comment.query.all()
+    return render_template('read_publish.html', hi=user, pub=pub, user=Users, comments=comments, look=look.total, like=like)
+
+
 @app.route('/delete/<user>/<id>')
 def delete(user, id):
     if session.get('my_first_blog') == user:
@@ -96,16 +126,21 @@ def delete(user, id):
     return redirect(url_for('ups'))
 
 
-@app.route('/create_comment/<user>/<id_user>/<id_pub>', methods=['Post', 'Get'])
-def create_comment(user, id_user, id_pub):
+@app.route('/create_comment/<user>/<id_pub>', methods=['Post', 'Get'])
+def create_comment(user, id_pub):
+    print(user)
     if session.get('my_first_blog') == user:
         if request.method == 'POST':
             com = request.form.get('comment')
             if com:
-                comment = Comment(comment=com, users_id=id_user, publish_id=id_pub)
+                id_u = Users.query.filter_by(email=user).one_or_none()
+                print(id_u.id)
+                comment = Comment(comment=com, users_id=id_u.id, publish_id=id_pub)
                 db.session.add(comment)
                 db.session.commit()
-                return redirect(url_for('publish', id=user))
+                return redirect(url_for('read_publish', user=user, id=id_pub))
+            else:
+                return redirect(url_for('read_publish', user=user, id=id_pub))
 
     return redirect(url_for('ups'))
 
