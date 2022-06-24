@@ -74,11 +74,11 @@ def all_publish():
 @jwt_required()
 def read_publish():
     try:
-        comment = []
         read_publish_id = request.json.get('publish_id', None)
+
+        comment = []
         publish = Publish.query.filter_by(id=read_publish_id).first()
         user = Users.query.filter_by(id=publish.users_id).first()
-
         comments = Comment.query.filter_by(publish_id=read_publish_id).all()
         like = Like.query.filter_by(publish_id=read_publish_id).first()
         look = Look.query.filter_by(publish_id=read_publish_id).first()
@@ -99,11 +99,16 @@ def read_publish():
             look=look.total
         )
     except AttributeError:
-        return jsonify(
-            user=user.username,
-            id=publish.id,
-            title=publish.title_article,
-            post=publish.text_article,
-            date=publish.create_on.strftime("%Y-%m-%d %H:%M:%S"),
-            comment=comment,
-        )
+        try:
+            return jsonify(
+                user=user.username,
+                id=publish.id,
+                title=publish.title_article,
+                post=publish.text_article,
+                date=publish.create_on.strftime("%Y-%m-%d %H:%M:%S"),
+                comment=comment,
+            )
+        except UnboundLocalError:
+            return jsonify(
+                'Что-то пошло не так! Проверте правилность номера Поста!'
+            )
