@@ -112,3 +112,27 @@ def read_publish():
             return jsonify(
                 'Что-то пошло не так! Проверте правилность номера Поста!'
             )
+
+
+@api.route('/create_publish', methods=['POST'])
+@jwt_required()
+def create_publish():
+    email = request.json.get("email")
+    password = request.json.get('password')
+    title = request.json.get('title')
+    text = request.json.get('text')
+    user = Users.query.filter_by(email=email).first()
+    if user.email == email and user.password == password:
+        if not text and not title:
+            return jsonify('Поля не должен быт пустым!')
+        else:
+            pub = Publish(title_article=title, text_article=text, users_id=user.id)
+            db.session.add(pub)
+            db.session.commit()
+    else:
+        jsonify("incorrect email or password!")
+
+    return jsonify(
+        "Добавлено!"
+    )
+
