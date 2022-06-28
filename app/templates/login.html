@@ -1,11 +1,28 @@
-<div>
-    {{ msg }}<br>
-    <form method="Post">
-        <p> <label for="email">Напишите вашу эектроннную почту</label>
-        <input type="email" id="email" name="email"></p>
-        <p><label for="password">Напишите вашу пороль</label>
-        <input type="password" id="password" name="password"></p>
-        <input type="submit" value="Вход">
+{% extends "base.html" %}
+{% block content %}
+
+<div class="mx-auto" style="width: 450px;">
+    <p class="fw-normal">{{ msg }}</p>
+
+    <form method="post" class="input-group mb-3">
+        <div class="input-group mb-3">
+           <label for="email" class="col-sm-2 col-form-label">Email</label>
+            <input type="email" class="form-control" name="email" id="email">
+        </div>
+
+        <div class="input-group mb-3">
+            <label for="password" class="col-sm-2 col-form-label">Password</label>
+            <input type="password" id="password" name="password" class="form-control">
+
+        </div>
+
+        <div class="d-grid gap-2 col-6 mx-auto">
+        <input type="submit" value="Sign in" class="btn btn-outline-primary mb-3 dropdown-center">
+        </div>
     </form>
-    <a href="{{ url_for('register') }}">Регистрация</a>
+
+        <div class="d-grid gap-2 col-6 mx-auto">
+            <a href="{{ url_for('.register') }}" class="btn btn-outline-primary">Sing up</a>
+        </div>
 </div>
+{% endblock %}

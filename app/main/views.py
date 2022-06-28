@@ -15,36 +15,40 @@ def index():
 def register():
     if session.get('my_first_blog'):
         session.pop('my_first_blog')
-    username = request.form.get('name')
-    email = request.form.get('email')
-    password = request.form.get('password')
+    msg = ''
+    if request.method == 'POST':
+        username = request.form.get('name')
+        email = request.form.get('email')
+        password = request.form.get('password')
 
-    if username and email and password:
-        session["my_first_blog"] = email
-        if Users.query.filter_by(email=email).first() and Users.query.filter_by(password=password):
+        if username and email and password:
+            session["my_first_blog"] = email
+            if Users.query.filter_by(email=email).first() and Users.query.filter_by(password=password):
+                return redirect(url_for('publish', id=email))
+
+            user = Users(username=username, email=email, password=password)
+            db.session.add(user)
+            db.session.commit()
             return redirect(url_for('publish', id=email))
 
-        user = Users(username=username, email=email, password=password)
-        db.session.add(user)
-        db.session.commit()
-        return redirect(url_for('publish', id=email))
-
-    msg = 'Проверте все поля!'
+        msg = 'Проверте все поля!'
     return render_template('register.html', msg=msg)
 
 
-@app.route("/login", methods=["Post", "Get"])
+@app.route("/login", methods=["Post", 'get'])
 def login():
-    if session.get('my_first_blog'):
-        session.pop('my_first_blog')
-    email = request.form.get('email')
-    password = request.form.get('password')
-    if email and password:
-        if Users.query.filter_by(email=email).first() and Users.query.filter_by(password=password):
-            session["my_first_blog"] = email
-            return redirect(url_for('publish', id=email))
+    if session.get('my_first_blog'): session.pop('my_first_blog')
 
-    msg = 'Проверте все поля!'
+    msg = ''
+    if request.method == "POST":
+        email = request.form.get('email')
+        password = request.form.get('password')
+        if email and password:
+            if Users.query.filter_by(email=email).first() and Users.query.filter_by(password=password):
+                session["my_first_blog"] = email
+                return redirect(url_for('publish', id=email))
+        msg = 'Проверте все поля!'
+
     return render_template('login.html', msg=msg)
 
 
@@ -81,6 +85,7 @@ def create_publish(id):
 def my_publish(id):
     if session.get('my_first_blog') != id:
         return redirect(url_for('register'))
+
     user = Users.query.filter_by(email=id).first()
     pub = Publish.query.filter_by(users_id=user.id).all()
     return render_template('my_publish.html', id_url=id, my_pub=pub)
@@ -92,7 +97,6 @@ def read_publish(user, id):
     id_u = Users.query.filter_by(email=user).one_or_none()
     if request.method == 'POST':
         like_btn = request.form.get('like')
-        print(id_u.id)
         if like_btn and like:
             like.total += 1
             db.session.commit()
@@ -113,7 +117,8 @@ def read_publish(user, id):
         db.session.commit()
     pub = Publish.query.filter_by(id=id).first()
     comments = Comment.query.all()
-    return render_template('read_publish.html', hi=user, pub=pub, user=Users, comments=comments, look=look.total, like=like)
+    return render_template('read_publish.html', hi=user, pub=pub, user=Users, comments=comments, look=look.total,
+                           like=like)
 
 
 @app.route('/delete/<user>/<id>')
@@ -128,17 +133,17 @@ def delete(user, id):
 
 @app.route('/create_comment/<user>/<id_pub>', methods=['Post', 'Get'])
 def create_comment(user, id_pub):
-    print(user)
     if session.get('my_first_blog') == user:
+
         if request.method == 'POST':
-            com = request.form.get('comment')
-            if com:
-                id_u = Users.query.filter_by(email=user).one_or_none()
-                print(id_u.id)
-                comment = Comment(comment=com, users_id=id_u.id, publish_id=id_pub)
+            get_comment = request.form.get('comment')
+
+            if get_comment:
+                comment = Comment(comment=get_comment, users_id=Users.query.filter_by(email=user).one_or_none().id, publish_id=id_pub)
                 db.session.add(comment)
                 db.session.commit()
                 return redirect(url_for('read_publish', user=user, id=id_pub))
+
             else:
                 return redirect(url_for('read_publish', user=user, id=id_pub))
 

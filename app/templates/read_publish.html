@@ -1,35 +1,68 @@
-<div>
-  <ul>
-    <li><a href="{{ url_for('index') }}">Выход</a></li>
-    <li><a href="{{ url_for('create_publish', id=id_url) }}">Создать публикацию</a></li>
-      <li><a href="{{ url_for('my_publish', id=id_url) }}">Мои публикации</a></li>
-  </ul>
+{% extends "base.html" %}
+{% block nav %}
+<nav class="navbar navbar-expand-lg bg-light">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="{{ url_for('my_publish', id=hi) }}">My blog</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="{{ url_for('publish', id=hi) }}">Home</a>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('create_publish', id=id_url) }}">Create blog</a>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('index') }}">Sign out</a>
+            </li>
+        </ul>
+    </div>
+  </div>
+</nav>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="mx-auto" style="width: 900px;">
+    <ol class="list-group">
+    <li  class="list-group-item">
+        <p>Username: {{  user.query.filter_by(id=pub.users_id).one_or_none().username }}</p>  <hr>
+        <p>Header: {{ pub.title_article }}</p>  <hr>
+        <p>Publish:<br> {{ pub.text_article }}</p></li>
+        <li  class="list-group-item">
+            <form method="post" action="/create_comment/{{hi}}/{{pub.id}}" class="row g-3">
+                <div class="col-auto"><h4>Comment:</h4></div>
+                  <div class="col-auto">
+                    <input id="comment" name="comment" placeholder="Comment here!" type="text" class="form-control">
+                 </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary mb-3">Sent</button>
+                </div>
+
+            </form>
+            {% for c in comments %}
+            <hr>
+                {% if c.publish_id == pub.id %}
+                    {{  user.query.filter_by(id=c.users_id).one_or_none().username }} {{c.create_on}}<br>{{c.comment}}
+                {% endif %}
+
+            {% endfor %}
+        </li>
+
+        <li  class="list-group-item">
+            <div class="d-flex justify-content-center">
+
+                <form method="post">
+                  <input type="hidden" id="like" name="like" value="1">
+                  <input type="submit" value="{{like.total}} Class" class="btn btn-outline-primary"> Number of views: {{look}} | Дата: {{ pub.create_on }}<br>
+                </form>
+
+            </div>
+        </li>
+    </ol>
 </div>
-<div>
-    <p>
-        Ползователь: {{  user.query.filter_by(id=pub.users_id).one_or_none().username }}<br>
-        Заголовок: {{ pub.title_article }}<br><br>
-        Публикация:<br> {{ pub.text_article }}<br><br>
-        Кол просмотров: {{look}}<br>
-        Дата: {{ pub.create_on }}<br>
-
-        <p>Comment: <br>
-        {% for c in comments %}
-
-            {% if c.publish_id == pub.id %}
-                {{  user.query.filter_by(id=c.users_id).one_or_none().username }} {{c.create_on}}<br>{{c.comment}} <br><br>
-            {% endif %}
-        {% endfor %}</p>
-
-
-        <form method="post" action="/create_comment/{{hi}}/{{pub.id}}">
-
-            <label for="comment">Comment </label><input id="comment" name="comment" placeholder="Comment here!" type="text">
-            <button type="submit">Sent</button>
-        </form>
-         <form method="post">
-      <input type="hidden" id="like" name="like" value="1">{{like.total}}
-      <input type="submit" value="Class">
-    </form>
-    </p>
-</div>
+{% endblock %}

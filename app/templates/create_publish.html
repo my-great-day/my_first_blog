@@ -1,8 +1,24 @@
-<p>{{ msg }}</p>
-<form method="post">
-    <p><label for="title">Напишите заголовок</label></p>
-    <p><input type="text" id="title" name="title"></p>
-    <p><label for="text">Напишите свою публикацию</label></p>
-    <p><textarea name="text" id="text" ></textarea></p>
-    <p><button type="submit">Публикация</button></p>
-</form>
+{% extends "base.html" %}
+{% block content %}
+<div class="mx-auto" style="width: 450px;">
+    <div class="alert alert-light" role="alert">
+      {{ msg }}
+    </div>
+        <form method="post">
+            <div class="mb-3">
+                <label for="title" class="form-label">Write header</label>
+                <input type="text" class="form-control" id="title" placeholder="Header">
+            </div>
+
+            <div class="mb-3">
+                <label for="text" class="form-label">Write your publishing</label>
+                <textarea class="form-control" id="text" name="text" rows="3"></textarea>
+            </div>
+
+            <div class="d-grid gap-2 col-6 mx-auto">
+                <input type="submit" value="Publish" class="btn btn-outline-primary mb-3 dropdown-center">
+            </div>
+        </form>
+</div>
+
+{% endblock %}
