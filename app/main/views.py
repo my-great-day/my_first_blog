@@ -78,7 +78,7 @@ def create_publish(id):
             db.session.commit()
 
             return redirect(url_for('publish', id=id))
-    return render_template('create_publish.html', msg=msg)
+    return render_template('create_publish.html', msg=msg, id_url=id)
 
 
 @app.route('/my_publish/<id>')

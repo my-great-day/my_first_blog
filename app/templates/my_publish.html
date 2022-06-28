@@ -1,17 +1,53 @@
-<div>
-  <ul>
-    <li><a href="{{ url_for('index') }}">Выход</a></li>
-    <li><a href="{{ url_for('create_publish', id=id_url) }}">Создать публикацию</a></li>
-      <li><a href="{{ url_for('publish', id=id_url) }}">Все публикации</a></li>
-  </ul>
-</div>
-<div>
-    {% for p in my_pub %}
-        <p>
-            Заголовок: {{ p.title_article }}<br>
-            Публикация:<br> {{ p.text_article }}<br>
-            Дата: {{ p.create_on }}<br>
-            <a href="{{ url_for('delete', user=id_url, id=p.id) }}">Удалить</a>
-        </p>
-    {% endfor %}
-</div>
+{% extends "base.html" %}
+
+{% block nav %}
+    <nav class="navbar navbar-expand-lg bg-light">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="{{ url_for('my_publish', id=id_url) }}">My blog</a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                  <a class="nav-link active" aria-current="page" href="/">Home</a>
+                </li>
+
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('create_publish', id=id_url) }}">Create blog</a>
+                </li>
+
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('index') }}">Sign out</a>
+                </li>
+            </ul>
+        </div>
+      </div>
+    </nav>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock %}
+
+{% block content %}
+    <div class="mx-auto" style="width: 900px;">
+        <p class="fst-italic fs-3">My publish</p>
+        <hr>
+         <div>
+            <ol class="list-group">
+                {% for p in my_pub %}
+                    <li class="list-group-item">
+                        <p>
+                            <p>Header: {{ p.title_article }}</p>
+                            <p>Publish:<br> {{ p.text_article }}</p>
+                           <p> Date: {{ p.create_on }}<br>
+                               <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{{ url_for('delete', user=id_url, id=p.id) }}" class="btn btn-outline-primary">Delete</a>
+                            </div>
+                        </p>
+                  </li>
+                {% endfor %}
+            </ol>
+         </div>
+    </div>
+{% endblock %}

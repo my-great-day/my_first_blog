@@ -1,4 +1,32 @@
 {% extends "base.html" %}
+{% block nav %}
+<nav class="navbar navbar-expand-lg bg-light">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="{{ url_for('my_publish', id=id_url) }}">My blog</a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+             <a class="nav-link active" aria-current="page" href="{{ url_for('publish', id=id_url) }}">Home</a>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('create_publish', id=id_url) }}">Create blog</a>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('index') }}">Sign out</a>
+            </li>
+        </ul>
+    </div>
+  </div>
+</nav>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock %}
 {% block content %}
 <div class="mx-auto" style="width: 450px;">
     <div class="alert alert-light" role="alert">
@@ -7,7 +35,7 @@
         <form method="post">
             <div class="mb-3">
                 <label for="title" class="form-label">Write header</label>
-                <input type="text" class="form-control" id="title" placeholder="Header">
+                <input type="text" class="form-control" id="title" name="title" placeholder="Header">
             </div>
 
             <div class="mb-3">
